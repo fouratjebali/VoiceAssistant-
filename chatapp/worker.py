@@ -1,9 +1,9 @@
-from openai import OpenAI
+from transformers import AutoModelForCausalLM, AutoTokenizer
 import os
 import requests
 
-openai_client = OpenAI(api_key="apikey")
-
+tokenizer = AutoTokenizer.from_pretrained("EleutherAI/gpt-neo-1.3B")
+model = AutoModelForCausalLM.from_pretrained("EleutherAI/gpt-neo-1.3B")
 
 def speech_to_text(audio_binary):
     base_url = "https://sn-watson-stt.labs.skills.network"
@@ -46,15 +46,8 @@ def text_to_speech(text, voice=""):
 
 
 def openai_process_message(user_message):
-    prompt = "Act like a personal assistant. You can respond to questions, translate sentences, summarize news, and give recommendations."
-    openai_response = openai_client.chat.completions.create(
-        model="gpt-3.5-turbo", 
-        messages=[
-            {"role": "system", "content": prompt},
-            {"role": "user", "content": user_message}
-        ],
-        max_tokens=4000
-    )
-    print("openai response:", openai_response)
-    response_text = openai_response.choices[0].message.content
-    return response_text
+    prompt = "Act like a personal assistant. You can respond to questions, translate sentences, summarize news, and give recommendations.\n\nUser: " + user_message + "\nAssistant:"
+    inputs = tokenizer(prompt, return_tensors="pt", max_length=512, truncation=True)
+    outputs = model.generate(inputs["input_ids"], max_length=512, num_return_sequences=1, pad_token_id=tokenizer.eos_token_id)
+    response_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
+    return response_text.split("Assistant:")[-1].strip()

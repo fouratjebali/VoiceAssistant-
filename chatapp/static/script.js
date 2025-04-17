@@ -49,10 +49,10 @@ const processUserMessage = async (userMessage) => {
 
 const cleanTextInput = (value) => {
   return value
-    .trim() // remove starting and ending spaces
-    .replace(/[\n\t]/g, "") // remove newlines and tabs
-    .replace(/<[^>]*>/g, "") // remove HTML tags
-    .replace(/[<>&;]/g, ""); // sanitize inputs
+    .trim() 
+    .replace(/[\n\t]/g, "") 
+    .replace(/<[^>]*>/g, "") 
+    .replace(/[<>&;]/g, ""); 
 };
 
 const recordAudio = () => {
@@ -102,7 +102,7 @@ const playResponseAudio = (function () {
   const df = document.createDocumentFragment();
   return function Sound(src) {
     const snd = new Audio(src);
-    df.appendChild(snd); // keep in fragment until finished playing
+    df.appendChild(snd); 
     snd.addEventListener("ended", function () {
       df.removeChild(snd);
     });
@@ -116,16 +116,13 @@ const getRandomID = () => {
 };
 
 const scrollToBottom = () => {
-  // Scroll the chat window to the bottom
   $("#chat-window").animate({
     scrollTop: $("#chat-window")[0].scrollHeight,
   });
 };
 const populateUserMessage = (userMessage, userRecording) => {
-  // Clear the input field
   $("#message-input").val("");
 
-  // Append the user's message to the message list
 
   if (userRecording) {
     const userRepeatButtonID = getRandomID();
@@ -157,7 +154,6 @@ const populateBotResponse = async (userMessage) => {
   const repeatButtonID = getRandomID();
   botRepeatButtonIDToIndexMap[repeatButtonID] = responses.length - 1;
   hideBotLoadingAnimation();
-  // Append the random message to the message list
   $("#message-list").append(
     `<div class='message-line'><div class='message-box${
       !lightMode ? " dark" : ""
@@ -172,7 +168,6 @@ const populateBotResponse = async (userMessage) => {
 };
 
 $(document).ready(function () {
-  // Listen for the "Enter" key being pressed in the input field
   $("#message-input").keyup(function (event) {
     let inputVal = cleanTextInput($("#message-input").val());
 
@@ -198,7 +193,6 @@ $(document).ready(function () {
     }
   });
 
-  // When the user clicks the "Send" button
   $("#send-button").click(async function () {
     if ($("#send-button").hasClass("microphone") && !recording) {
       toggleRecording();
@@ -216,7 +210,6 @@ $(document).ready(function () {
       $(".fa-microphone").css("color", "#125ee5");
       recording = false;
     } else {
-      // Get the message the user typed in
       const message = cleanTextInput($("#message-input").val());
 
       populateUserMessage(message, null);
@@ -229,7 +222,6 @@ $(document).ready(function () {
     }
   });
 
-  // handle the event of switching light-dark mode
   $("#light-dark-mode-switch").change(function () {
     $("body").toggleClass("dark-mode");
     $(".message-box").toggleClass("dark");
